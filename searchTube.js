@@ -1,28 +1,34 @@
-//show JSON by using strinify to create a strong that can be used as a variable and added to the innerHTML #response
-$(function(){
-function showResponse(response) {
-    var responseString = JSON.stringify(response, '', 2);
-    document.getElementById('response').innerHTML += responseString;
-}
+//This is just a function call to get a JSON
+//content of JSON is parse and given back as data
+//.getJson => returns a promise  it is making the request
+//once a promise is called, it runs the function once a response is recevied, once it is done it then runs the next function
+//.then will run the promise after the function is completed.
+//used when a request depends on another request
 
-function onClientLoad() {
-    gapi.client.load('youtube', 'v3', onYouTubeApiLoad);
-}
+var renderSearchResult = function(item){
+	return '<p>' + item.snippet.channelTitle + '</p>';
+};
 
-function onYouTubeApiLoad() {
-    gapi.client.setApiKey('AIzaSyCX9ZTK48f0vQ5_iPDc1yK37ADI5IUQpmw');    
-    search();
-}
+$(document).ready(function(){
 
-function search(){
-	var request = gapi.client.youtube.search.list({
-		part: 'snippet',
-		q: 'red'
-	}); 
-	request.execute(onSearchResponse);
-}
+	$('#search-term').on('submit', function(eventObject){
+		eventObject.preventDefault();
+		var searchQuery = $('#query').val();
+		var searchYouTube = $.getJSON('https://www.googleapis.com/youtube/v3/search', {
+			part: 'snippet',
+			key: 'AIzaSyCX9ZTK48f0vQ5_iPDc1yK37ADI5IUQpmw',
+			q: searchQuery
+		});
 
-function onSearchResponse(response){
-	showResponse(response);
-	}
+		searchYouTube.then(function(data){
+			$('#response').empty();
+			$.each(data.items, function(index, item){
+				$('#response').append(renderSearchResult(item));
+			});
+
+			console.log(data);
+			
+		});
+	});
 });
+	
