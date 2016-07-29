@@ -11,12 +11,15 @@ function onClientLoad() {
 
 function onYouTubeApiLoad() {
     gapi.client.setApiKey('AIzaSyCX9ZTK48f0vQ5_iPDc1yK37ADI5IUQpmw');    
+    search();
 }
 
 function search(){
 	var request = gapi.client.youtube.search.list({
-		part: 'id'
+		part: 'snippet',
+		q: 'red'
 	}); 
+	request.execute(onSearchResponse);
 }
 
 function onSearchResponse(response){
